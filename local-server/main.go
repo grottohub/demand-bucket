@@ -58,7 +58,7 @@ func init() {
 	}
 
 	http.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\n > Received %v request from %v\n", r.Method, r.Header["X-Forwarded-For"][0])
+		fmt.Printf("\n > Received %v request from %v\n", r.Method, r.Header["X-Forwarded-For"])
 
 		if r.Method == "POST" {
 			bucket := cache.AddBucket()
