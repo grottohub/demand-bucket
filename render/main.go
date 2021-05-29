@@ -21,8 +21,12 @@ func toStrings(arr []interface{}) []string {
 	return s
 }
 
+func isEmpty(s string) bool {
+	return len(s) == 0 || s == "\"\""
+}
+
 func (r *Renderer) Init() {
-	funcs := template.FuncMap{"join": strings.Join, "toStrings": toStrings}
+	funcs := template.FuncMap{"join": strings.Join, "toStrings": toStrings, "isEmpty": isEmpty}
 
 	var err error
 	r.Template, err = template.New("main").Funcs(funcs).ParseGlob("render/templates/*.gohtml")

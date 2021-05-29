@@ -58,10 +58,20 @@ func init() {
 	}
 
 	http.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"][0])
-		cache.AddBucket()
-		res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"][0])
-		fmt.Fprint(w, res)
+		fmt.Printf("\n > Received %v request from %v\n", r.Method, r.Header["X-Forwarded-For"][0])
+
+		if r.Method == "POST" {
+			bucket := cache.AddBucket()
+			page := &Page{
+				Header: HeaderInfo{
+					Title: "/" + bucket,
+					Desc:  "DemandBucket is a RequestBin clone built using Golang and Redis.",
+				},
+				Bucket: []BucketInfo{},
+			}
+
+			rndr.Render(w, "bucket", page)
+		}
 	})
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {

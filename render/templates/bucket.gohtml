@@ -6,6 +6,15 @@
 		{{template "nav"}}
 		{{range .Bucket}}
 			{{template "request" .Info}}
+		{{else}}
+			<div class="card">
+				<div class="card-header">
+					Make a Request
+				</div>
+				<div class="card-body">
+					<p class="card-text">You can send requests to this bucket at endpoint {{.Header.Title}}</p>
+				</div>
+			</div>
 		{{end}}
 		{{template "scripts"}}
 	</body>

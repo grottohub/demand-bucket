@@ -69,7 +69,7 @@ func setBucketExp(key string) {
 	}
 }
 
-func AddBucket() {
+func AddBucket() string {
 	key := randStringBytesMaskImprSrcSB(8)
 
 	l, err := rdb.LPush(ctx, key, "null").Result()
@@ -80,6 +80,8 @@ func AddBucket() {
 	fmt.Printf(" > bucket %v initialized with a size of %v and initial value 'null'\n", key, l)
 
 	setBucketExp(key)
+
+	return key
 }
 
 func AddRequest(key string, request interface{}) {
