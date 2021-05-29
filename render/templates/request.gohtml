@@ -14,6 +14,12 @@
     {{else}}
     <p class="card-text"><em>None</em></p>
     {{end}}
+    <h5 class="card-title">Form</h5>
+    {{range $index, $element := .Form}}
+    <p class="card-text"><strong>{{$index}}</strong>: {{with toStrings $element}}{{join . ","}}{{end}}</p>
+    {{else}}
+    <p class="card-text"><em>None</em></p>
+    {{end}}
     <h5 class="card-title">Query</h5>
     {{if isEmpty .Query}}
     <p class="card-text"><em>None</em></p>

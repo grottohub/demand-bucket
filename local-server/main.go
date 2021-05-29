@@ -18,6 +18,8 @@ func formatRequest(r *http.Request) string {
 
 	j.SetEscapeHTML(false)
 
+	r.ParseForm()
+
 	j.Encode(r.Header)
 	j.Encode(r.Body)
 	j.Encode(r.Form)
@@ -58,7 +60,7 @@ func init() {
 	}
 
 	http.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\n > Received %v request from %v\n", r.Method, r.Header["X-Forwarded-For"])
+		fmt.Printf("\n > Received %v request from %v\n", r.Method, r.Header["User-Agent"])
 
 		if r.Method == "POST" {
 			bucket := cache.AddBucket()
@@ -79,7 +81,7 @@ func init() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"])
+		fmt.Printf("\n > Received request from %v\n", r.Header["User-Agent"])
 		path := html.EscapeString(r.URL.Path)
 		q := html.EscapeString(r.URL.RawQuery)
 
@@ -102,12 +104,14 @@ func init() {
 
 					h := []byte(parts[0])
 					b := []byte(parts[1])
+					f := []byte(parts[2])
 					q := parts[3]
 
 					newReq := BucketInfo{}
 
 					json.Unmarshal(h, &newReq.Info.Headers)
 					json.Unmarshal(b, &newReq.Info.Body)
+					json.Unmarshal(f, &newReq.Info.Form)
 					newReq.Info.Query = q
 
 					bucketPage.Bucket = append(bucketPage.Bucket, newReq)
@@ -117,7 +121,7 @@ func init() {
 			} else {
 				req := formatRequest(r)
 				cache.AddRequest(path, req)
-				res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"])
+				res := fmt.Sprintf("user-agent:%v\n", r.Header["User-Agent"])
 				fmt.Fprint(w, res)
 			}
 		}
