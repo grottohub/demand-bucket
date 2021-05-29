@@ -1,6 +1,7 @@
 package localserver
 
 import (
+	"demand-bucket/cache"
 	"fmt"
 	"html"
 	"log"
@@ -24,9 +25,11 @@ func init() {
 			fmt.Println(" > need to render homepage")
 		} else {
 			if q == "inspect" {
+				fmt.Printf(" > currently in %v: %v", path, cache.GetBucket(path))
 				fmt.Println(" > need to render inspection of bucket", path)
 			} else {
-				fmt.Println(" > need to add request to bucket", path)
+				cache.AddBucket(path)
+				// fmt.Println(" > need to add request to bucket", path)
 			}
 		}
 
@@ -38,6 +41,6 @@ func init() {
 func Start(port int) {
 	pStr := fmt.Sprintf(":%v", port)
 
-	fmt.Printf("\n > Starting server and listening on %v...\n\n", pStr)
+	fmt.Printf(" > Starting server and listening on %v...\n\n", pStr)
 	log.Fatal(http.ListenAndServe(pStr, nil))
 }
