@@ -1,13 +1,7 @@
 package main
 
-// import localserver "demand-bucket/local-server"
-import (
-	"demand-bucket/cache"
-	"fmt"
-)
+import localserver "demand-bucket/local-server"
 
 func main() {
-	// localserver.Start(8080)
-	cache.AddBucket("abcdefg")
-	fmt.Println(cache.GetBucket("abcdefg"))
+	localserver.Start(8080)
 }
