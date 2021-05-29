@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>DemandBucket - {{.Bucket}}</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="description" content="" />
+	</head>
+	<body>
+		<h1>Headers</h1>
+		{{range $index, $element := .Info}}
+		<strong>{{$index}}</strong>: {{$element}}<br />
+		{{end}}
+	</body>
+</html>	

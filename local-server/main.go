@@ -2,6 +2,7 @@ package localserver
 
 import (
 	"demand-bucket/cache"
+	"demand-bucket/render"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -25,13 +26,24 @@ func formatRequest(r *http.Request) string {
 	return w.String()
 }
 
+type BucketInfo struct {
+	Bucket string
+	Info   *interface{}
+}
+
 func init() {
+	rndr := &render.Renderer{}
+	rndr.Init()
+
 	http.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"][0])
-		// fmt.Println(" > need to create new bucket")
 		cache.AddBucket()
 		res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"][0])
 		fmt.Fprint(w, res)
+	})
+
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -40,20 +52,28 @@ func init() {
 		q := html.EscapeString(r.URL.RawQuery)
 
 		if path == "/" {
-			fmt.Println(" > need to render homepage")
+			rndr.Render(w, "home", nil)
 		} else {
 			if q == "inspect" {
-				fmt.Printf(" > currently in %v: %v", path, cache.GetBucket(path))
-				fmt.Println(" > need to render inspection of bucket", path)
+				info := cache.GetBucket(path)
+				b := &BucketInfo{Bucket: path}
+
+				req := strings.Split(info[0], "\n")
+				err := json.Unmarshal([]byte(req[0]), &b.Info)
+				if err != nil {
+					panic(err)
+				}
+
+				fmt.Printf(" > unmarshaled: %+v\n", b)
+
+				rndr.Render(w, "bucket", b)
 			} else {
 				req := formatRequest(r)
 				cache.AddRequest(path, req)
-				// fmt.Println(" > need to add request to bucket", path)
+				res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"][0])
+				fmt.Fprint(w, res)
 			}
 		}
-
-		res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"][0])
-		fmt.Fprint(w, res)
 	})
 }
 
