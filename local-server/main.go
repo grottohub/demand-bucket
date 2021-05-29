@@ -79,7 +79,7 @@ func init() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"][0])
+		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"])
 		path := html.EscapeString(r.URL.Path)
 		q := html.EscapeString(r.URL.RawQuery)
 
@@ -117,7 +117,7 @@ func init() {
 			} else {
 				req := formatRequest(r)
 				cache.AddRequest(path, req)
-				res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"][0])
+				res := fmt.Sprintf("ip:%v\n", r.Header["X-Forwarded-For"])
 				fmt.Fprint(w, res)
 			}
 		}
