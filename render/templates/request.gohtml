@@ -1,0 +1,19 @@
+{{define "request"}}
+<div class="card">
+  <div class="card-header">
+    Request
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Headers</h5>
+    {{range $index, $element := .Headers}}
+    <p class="card-text"><strong>{{$index}}</strong>: {{with toStrings $element}}{{join . ","}}{{end}}</p>
+    {{end}}
+    <h5 class="card-title">Body</h5>
+    {{range $index, $element := .Body}}
+    <p class="card-text"><strong>{{$index}}</strong>: {{with toStrings $element}}{{join . ","}}{{end}}</p>
+    {{end}}
+    <h5 class="card-title">Query</h5>
+    {{.Query}}
+  </div>
+</div>
+{{end}}

@@ -4,9 +4,8 @@
 	{{template "header" .Header}}
 	<body>
 		{{template "nav"}}
-		<h1>Headers</h1>
-		{{range $index, $element := .Bucket.Info}}
-		<strong>{{$index}}</strong>: {{with toStrings $element}}{{join . ","}}{{end}}<br />
+		{{range .Bucket}}
+			{{template "request" .Info}}
 		{{end}}
 		{{template "scripts"}}
 	</body>

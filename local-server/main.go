@@ -28,7 +28,12 @@ func formatRequest(r *http.Request) string {
 
 type BucketInfo struct {
 	Bucket string
-	Info   *interface{}
+	Info   struct {
+		Headers *interface{}
+		Body    *interface{}
+		Form    *interface{}
+		Query   string
+	}
 }
 
 type HeaderInfo struct {
@@ -38,7 +43,7 @@ type HeaderInfo struct {
 
 type Page struct {
 	Header HeaderInfo
-	Bucket BucketInfo
+	Bucket []BucketInfo
 }
 
 func init() {
@@ -79,15 +84,23 @@ func init() {
 						Title: path,
 						Desc:  "DemandBucket is a RequestBin clone built using Golang and Redis.",
 					},
-					Bucket: BucketInfo{
-						Bucket: path,
-					},
+					Bucket: []BucketInfo{},
 				}
 
-				req := strings.Split(info[0], "\n")
-				err := json.Unmarshal([]byte(req[0]), &bucketPage.Bucket.Info)
-				if err != nil {
-					panic(err)
+				for _, req := range info {
+					parts := strings.Split(req, "\n")
+
+					h := []byte(parts[0])
+					b := []byte(parts[1])
+					q := parts[3]
+
+					newReq := BucketInfo{}
+
+					json.Unmarshal(h, &newReq.Info.Headers)
+					json.Unmarshal(b, &newReq.Info.Body)
+					newReq.Info.Query = q
+
+					bucketPage.Bucket = append(bucketPage.Bucket, newReq)
 				}
 
 				rndr.Render(w, "bucket", bucketPage)
