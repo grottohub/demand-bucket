@@ -1,15 +1,14 @@
+{{define "bucket"}}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>DemandBucket - {{.Bucket}}</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<meta name="description" content="" />
-	</head>
+	{{template "header" .Header}}
 	<body>
+		{{template "nav"}}
 		<h1>Headers</h1>
-		{{range $index, $element := .Info}}
-		<strong>{{$index}}</strong>: {{$element}}<br />
+		{{range $index, $element := .Bucket.Info}}
+		<strong>{{$index}}</strong>: {{with toStrings $element}}{{join . ","}}{{end}}<br />
 		{{end}}
+		{{template "scripts"}}
 	</body>
 </html>	
+{{end}}

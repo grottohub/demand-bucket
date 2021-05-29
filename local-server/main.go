@@ -31,9 +31,26 @@ type BucketInfo struct {
 	Info   *interface{}
 }
 
+type HeaderInfo struct {
+	Title string
+	Desc  string
+}
+
+type Page struct {
+	Header HeaderInfo
+	Bucket BucketInfo
+}
+
 func init() {
 	rndr := &render.Renderer{}
 	rndr.Init()
+
+	homePage := &Page{
+		Header: HeaderInfo{
+			Title: "Home",
+			Desc:  "DemandBucket is a RequestBin clone built using Golang and Redis.",
+		},
+	}
 
 	http.HandleFunc("/new", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("\n > Received request from %v\n", r.Header["X-Forwarded-For"][0])
@@ -52,21 +69,28 @@ func init() {
 		q := html.EscapeString(r.URL.RawQuery)
 
 		if path == "/" {
-			rndr.Render(w, "home", nil)
+			rndr.Render(w, "home", homePage)
 		} else {
 			if q == "inspect" {
 				info := cache.GetBucket(path)
-				b := &BucketInfo{Bucket: path}
+
+				bucketPage := &Page{
+					Header: HeaderInfo{
+						Title: path,
+						Desc:  "DemandBucket is a RequestBin clone built using Golang and Redis.",
+					},
+					Bucket: BucketInfo{
+						Bucket: path,
+					},
+				}
 
 				req := strings.Split(info[0], "\n")
-				err := json.Unmarshal([]byte(req[0]), &b.Info)
+				err := json.Unmarshal([]byte(req[0]), &bucketPage.Bucket.Info)
 				if err != nil {
 					panic(err)
 				}
 
-				fmt.Printf(" > unmarshaled: %+v\n", b)
-
-				rndr.Render(w, "bucket", b)
+				rndr.Render(w, "bucket", bucketPage)
 			} else {
 				req := formatRequest(r)
 				cache.AddRequest(path, req)
